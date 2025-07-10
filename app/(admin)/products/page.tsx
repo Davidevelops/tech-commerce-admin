@@ -24,18 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pencil, Trash2, PlusCircle } from "lucide-react";
-
-export const getProducts = async () => {
-  try {
-    const res = await axios.get(
-      "http://localhost:5000/api/account/getProducts"
-    );
-    return res.data.products;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};
+import { getProducts } from "@/lib/getProducts";
 
 export default function Products() {
   const [products, setProducts] = useState<any[]>([]);
@@ -108,7 +97,6 @@ export default function Products() {
                       </Link>
                       <AlertDialog>
                         <AlertDialogTrigger className="flex gap-1 items-center bg-red-500 rounded p-1 text-white font-semibold">
-                          {" "}
                           <Trash2 className="w-4 h-4" />
                           Delete
                         </AlertDialogTrigger>
