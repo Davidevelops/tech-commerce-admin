@@ -80,7 +80,7 @@ export const logIn = async (_: any, formData: FormData) => {
       sameSite: "lax",
     });
 
-    return { success: true, errors: {}, redirect: "/adminDashboard" };
+    return { success: true, errors: {}, redirect: "/orders" };
   } catch (error: any) {
     if (error.response?.data?.errors) {
       return {

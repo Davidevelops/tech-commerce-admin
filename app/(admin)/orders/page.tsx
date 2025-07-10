@@ -5,8 +5,7 @@ export default async function Orders() {
   const orders = await getOrders();
 
   return (
-    <div className="p-4 grid gap-4">
-      <h1 className="text-4xl font-bold">Orders</h1>
+    <div className="grid gap-1 p-5">
       {orders ? (
         orders.map((order: Order, index: number) => {
           const names = order.orderName[0].split(",") ?? [];
@@ -18,33 +17,35 @@ export default async function Orders() {
 
           return (
             <div
-              className="orders-container flex border-b-2 justify-between items-center p-3"
+              className="orders-container flex border-b-2 justify-between items-center p-3 flex-wrap gap-2"
               key={index}
             >
               <div className="icon bg-purple-600 rounded p-2">
                 <Package size={60} color="white" />
               </div>
-              <div>
+              <div className="w-[300px] md:text-end md:border-b-2 lg:text-start">
                 {names.map((name, i) => (
-                  <h1>
-                    {name} x {quantities[i]}
-                  </h1>
+                  <div key={i}>
+                    <h1 className="font-bold text-lg">
+                      {name} x {quantities[i]}
+                    </h1>
+                  </div>
                 ))}
               </div>
-              <div>
-                <h1>{order.recipientName}</h1>
+              <div className="w-[250px]  sm:w-full md:w-full lg:w-[200px]">
+                <h1 className="font-bold">{order.recipientName}</h1>
                 <h1>{order.street}</h1>
                 <h1>{order.barangay}</h1>
                 <h1>{order.city}</h1>
                 <h1>{order.province}</h1>
-                <h1>{order.recipientContact}</h1>
+                <h1 className="font-bold">{order.recipientContact}</h1>
+              </div>
+              <div className="w-full sm:w-[100px] md:w-[100px]">
+                <h1 className="font-bold">Total: {total.toFixed(2)}</h1>
               </div>
               <div>
-                <h1>{total.toFixed(2)}</h1>
-              </div>
-              <div>
-                <h1>MOP: COD</h1>
-                <h1>PAYMENT: PENDING</h1>
+                <h1 className="font-bold">MOP: COD</h1>
+                <h1 className="font-bold">PAYMENT: PENDING</h1>
               </div>
             </div>
           );

@@ -29,11 +29,11 @@ export default function Nav({ adminName }: { adminName: string }) {
       <h1 className="mx-3 my-4 text-xl font-bold">{adminName}</h1>
       <nav className="flex flex-col gap-3 p-3 pr-0 ">
         <Link
-          href={"/adminDashboard"}
-          className={pathname.includes("adminDashboard") ? active : inactive}
+          href={"/orders"}
+          className={pathname.includes("orders") ? active : inactive}
         >
-          <LayoutDashboard />
-          Dashboard
+          <SquareChartGantt />
+          Orders
         </Link>
         <Link
           href={"/products"}
@@ -43,20 +43,6 @@ export default function Nav({ adminName }: { adminName: string }) {
           Products
         </Link>
 
-        <Link
-          href={"/orders"}
-          className={pathname.includes("orders") ? active : inactive}
-        >
-          <SquareChartGantt />
-          Orders
-        </Link>
-        <Link
-          href={"/settings"}
-          className={pathname.includes("settings") ? active : inactive}
-        >
-          <Settings />
-          Settings
-        </Link>
         <Link href={""} className={inactive} onClick={handleLogout}>
           <LogOut />
           Log Out

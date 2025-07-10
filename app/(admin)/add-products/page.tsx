@@ -10,7 +10,7 @@ import { Toaster } from "sonner";
 import { addProduct } from "@/app/actions/action";
 import axios from "axios";
 import { useState } from "react";
-import { Upload, Images, Trash2, CirclePlus } from "lucide-react";
+import { Images, Trash2, CirclePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   Select,
@@ -104,13 +104,11 @@ export default function AddProduct() {
   return (
     <div className="w-full rounded h-full overflow-hidden">
       <Toaster position="top-center" />
-      <div className="w-full p-6 flex gap-3 h-full">
+      <div className="w-full p-6 flex flex-col md:flex-row gap-3 h-full">
         <div className="uploads-container flex p-2 w-full border rounded flex-col gap-2 overflow-y-scroll">
           <Label className="border-dashed border-2 border-blue-400 flex flex-col items-center justify-center w-[100%] bg-blue-50 text-blue-700 rounded text-xl gap-5 hover:cursor-pointer p-10">
-            <Images size={100} />
-            <p className="flex gap-1 items-center text-gray-500">
-              {" "}
-              <Upload />
+            <Images size={80} />
+            <p className="flex gap-1 items-center text-gray-500 text-center text-sm md:text-lg">
               upload your product images here
             </p>
             <input
@@ -118,6 +116,7 @@ export default function AddProduct() {
               name="productImage"
               className="hidden"
               onChange={(e) => uploadProductImage(e)}
+              disabled={imageUrl.length >= 4}
             />
           </Label>
           <div className="uploaded-images">
@@ -128,26 +127,32 @@ export default function AddProduct() {
                 return (
                   <div
                     key={index}
-                    className="flex border items-center justify-between gap-2 p-3 mt-3"
+                    className="flex flex-col  md:flex-col lg:flex-row border items-center justify-between gap-2 p-3 mt-3"
                   >
-                    <div className="product-details flex items-center justify-center">
+                    <div className="product-details flex items-center flex-col  md:flex-col lg:flex-row justify-center">
                       {" "}
                       <img
                         src={url.secure_url}
                         alt="product"
                         className="w-[100px] h-[100px] rounded"
                       />
-                      <div className="px-2 flex flex-col gap-3  justify-between">
+                      <div className="px-2 flex flex-col gap-3 justify-between text-center w-[100px] md:w-[150px] lg:w-full truncate">
                         <h2>
                           {url.original_filename}.{url.format}
                         </h2>
-                        <p className="text-gray-400">{sizeInKB}Kb</p>
+                        <p className="text-gray-400 text-center">
+                          {sizeInKB}Kb
+                        </p>
                       </div>
                     </div>
 
                     <div className="button-container p-3">
-                      <button type="button" onClick={() => removeImage(index)}>
-                        <Trash2 size={28} />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="border rounded p-1 bg-red-500 text-white"
+                      >
+                        Remove
                       </button>
                     </div>
                   </div>
@@ -206,6 +211,7 @@ export default function AddProduct() {
               <SelectItem value="wearable">Wearables</SelectItem>
               <SelectItem value="portable_audio">Portable Audio</SelectItem>
               <SelectItem value="laptop">Laptop</SelectItem>
+              <SelectItem value="gaming_console">Gaming Console</SelectItem>
             </SelectContent>
           </Select>
           <Select onValueChange={(val) => setSubCategory(val)}>
