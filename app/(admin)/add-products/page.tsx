@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PulseLoader } from "react-spinners";
 
 type Properties = {
   name: string;
@@ -29,6 +30,8 @@ export default function AddProduct() {
   const [properties, setProperties] = useState<Properties[]>([]);
   const [subCategory, setSubCategory] = useState<string>("");
   const [category, setCategory] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
   const [state, formAction] = useActionState(addProduct, {
     success: false,
@@ -46,28 +49,39 @@ export default function AddProduct() {
 
   const uploadProductImage = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
     const imageUrls: string[] = [];
 
-    if (files) {
+    try {
       for (const file of files) {
         const data = new FormData();
         data.append("file", file);
         data.append("upload_preset", "e-commecre");
-        try {
-          const res = await axios.post(
-            "https://api.cloudinary.com/v1_1/dalbisegj/image/upload",
-            data
-          );
-          imageUrls.push(res.data);
-          console.log(res.data);
-        } catch (error) {
-          console.error(error);
-        }
+
+        const res = await axios.post(
+          "https://api.cloudinary.com/v1_1/dalbisegj/image/upload",
+          data
+        );
+        imageUrls.push(res.data);
       }
+      setImageUrl((prev) => [...prev, ...imageUrls]);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to upload images");
+    } finally {
+      setUploading(false);
     }
-    setImageUrl((prev) => [...prev, ...imageUrls]);
+  };
+
+  const handleSubmit = async (formData: FormData) => {
+    setSubmitting(true);
     try {
-    } catch (error) {}
+      await formAction(formData);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   function addProperties() {
@@ -75,6 +89,7 @@ export default function AddProduct() {
       return [...prev, { name: "", value: "" }];
     });
   }
+
   function handlePropertyNameChange(index: number, newName: string) {
     setProperties((prev) => {
       const properties = [...prev];
@@ -82,6 +97,7 @@ export default function AddProduct() {
       return properties;
     });
   }
+
   function handlePropertyValueChange(index: number, newValue: string) {
     setProperties((prev) => {
       const properties = [...prev];
@@ -89,35 +105,47 @@ export default function AddProduct() {
       return properties;
     });
   }
+
   function removeProperty(index: number) {
     setProperties((prev) => {
       const properties = [...prev];
       return properties.filter((property, pIndex) => pIndex !== index);
     });
   }
+
   function removeImage(index: number) {
     setImageUrl((prev) => {
       const images = [...prev];
       return images.filter((image, imIndex) => imIndex !== index);
     });
   }
+
   return (
     <div className="w-full rounded h-full overflow-hidden">
       <Toaster position="top-center" />
       <div className="w-full p-6 flex flex-col md:flex-row gap-3 h-full">
         <div className="uploads-container flex p-2 w-full border rounded flex-col gap-2 overflow-y-scroll">
           <Label className="border-dashed border-2 border-blue-400 flex flex-col items-center justify-center w-[100%] bg-blue-50 text-blue-700 rounded text-xl gap-5 hover:cursor-pointer p-10">
-            <Images size={80} />
-            <p className="flex gap-1 items-center text-gray-500 text-center text-sm md:text-lg">
-              upload your product images here
-            </p>
-            <input
-              type="file"
-              name="productImage"
-              className="hidden"
-              onChange={(e) => uploadProductImage(e)}
-              disabled={imageUrl.length >= 4}
-            />
+            {uploading ? (
+              <div className="flex flex-col items-center gap-2">
+                <PulseLoader color="#9d4edd" size={8} />
+                <p className="text-gray-500 text-sm">Uploading images...</p>
+              </div>
+            ) : (
+              <>
+                <Images size={80} />
+                <p className="flex gap-1 items-center text-gray-500 text-center text-sm md:text-lg">
+                  Upload your product images here
+                </p>
+                <input
+                  type="file"
+                  name="productImage"
+                  className="hidden"
+                  onChange={(e) => uploadProductImage(e)}
+                  disabled={imageUrl.length >= 4 || uploading}
+                />
+              </>
+            )}
           </Label>
           <div className="uploaded-images">
             {imageUrl &&
@@ -127,10 +155,9 @@ export default function AddProduct() {
                 return (
                   <div
                     key={index}
-                    className="flex flex-col  md:flex-col lg:flex-row border items-center justify-between gap-2 p-3 mt-3"
+                    className="flex flex-col md:flex-col lg:flex-row border items-center justify-between gap-2 p-3 mt-3"
                   >
-                    <div className="product-details flex items-center flex-col  md:flex-col lg:flex-row justify-center">
-                      {" "}
+                    <div className="product-details flex items-center flex-col md:flex-col lg:flex-row justify-center">
                       <img
                         src={url.secure_url}
                         alt="product"
@@ -151,6 +178,7 @@ export default function AddProduct() {
                         type="button"
                         onClick={() => removeImage(index)}
                         className="border rounded p-1 bg-red-500 text-white"
+                        disabled={uploading}
                       >
                         Remove
                       </button>
@@ -163,7 +191,7 @@ export default function AddProduct() {
 
         <form
           className="flex flex-col gap-4 border rounded p-3 w-full overflow-y-scroll"
-          action={formAction}
+          action={handleSubmit}
         >
           {imageUrl &&
             imageUrl.map((url: any, index) => (
@@ -180,6 +208,7 @@ export default function AddProduct() {
               id="productName"
               placeholder="Product Name"
               name="productName"
+              disabled={submitting}
             />
             {state.errors?.productName && (
               <p className="bg-red-200 text-red-800">
@@ -194,6 +223,7 @@ export default function AddProduct() {
               placeholder="Product Description"
               name="productDescription"
               rows={5}
+              disabled={submitting}
             ></Textarea>
             {state.errors?.productDescription && (
               <p className="bg-red-200 text-red-800">
@@ -201,7 +231,10 @@ export default function AddProduct() {
               </p>
             )}
           </div>
-          <Select onValueChange={(val) => setCategory(val)}>
+          <Select
+            onValueChange={(val) => setCategory(val)}
+            disabled={submitting}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Main Category" />
             </SelectTrigger>
@@ -214,7 +247,10 @@ export default function AddProduct() {
               <SelectItem value="gaming_console">Gaming Console</SelectItem>
             </SelectContent>
           </Select>
-          <Select onValueChange={(val) => setSubCategory(val)}>
+          <Select
+            onValueChange={(val) => setSubCategory(val)}
+            disabled={submitting}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Sub Category (Optional)" />
             </SelectTrigger>
@@ -232,6 +268,7 @@ export default function AddProduct() {
               min="1"
               placeholder="Price"
               name="productPrice"
+              disabled={submitting}
             />
             {state.errors?.productPrice && (
               <p className="bg-red-200 text-red-800">
@@ -240,12 +277,17 @@ export default function AddProduct() {
             )}
           </div>
           <div className="flex-col gap-1 inline-block">
-            <Button onClick={addProperties} type="button" className="mb-2">
+            <Button
+              onClick={addProperties}
+              type="button"
+              className="mb-2"
+              disabled={submitting}
+            >
               <CirclePlus /> Add Properties
             </Button>
             {properties &&
               properties.map((property, index) => (
-                <div key={index} className="flex  gap-1 p-2">
+                <div key={index} className="flex gap-1 p-2">
                   <Input
                     type="text"
                     value={property.name}
@@ -254,6 +296,7 @@ export default function AddProduct() {
                     onChange={(e) =>
                       handlePropertyNameChange(index, e.target.value)
                     }
+                    disabled={submitting}
                   ></Input>
 
                   <Input
@@ -264,6 +307,7 @@ export default function AddProduct() {
                     onChange={(e) =>
                       handlePropertyValueChange(index, e.target.value)
                     }
+                    disabled={submitting}
                   ></Input>
 
                   <Button
@@ -271,6 +315,7 @@ export default function AddProduct() {
                     size={"sm"}
                     onClick={() => removeProperty(index)}
                     type="button"
+                    disabled={submitting}
                   >
                     <Trash2 />
                   </Button>
@@ -290,8 +335,16 @@ export default function AddProduct() {
             value={JSON.stringify(properties)}
           />
           <div className="button-container">
-            <Button type="submit" className="w-full bg-blue-500">
-              Add Product
+            <Button
+              type="submit"
+              className="w-full bg-blue-500"
+              disabled={submitting || uploading}
+            >
+              {submitting ? (
+                <PulseLoader color="#9d4edd" size={8} />
+              ) : (
+                "Add Product"
+              )}
             </Button>
           </div>
         </form>

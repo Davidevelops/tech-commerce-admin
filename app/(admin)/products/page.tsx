@@ -25,14 +25,22 @@ import {
 } from "@/components/ui/table";
 import { Pencil, Trash2, PlusCircle } from "lucide-react";
 import { getProducts } from "@/lib/getProducts";
+import { PulseLoader } from "react-spinners";
 
 export default function Products() {
   const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const data = await getProducts();
-      setProducts(data);
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
@@ -46,6 +54,14 @@ export default function Products() {
       console.error(error);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="p-6 w-full flex justify-center items-center h-[calc(100vh-200px)]">
+        <PulseLoader color="#9d4edd" size={10} />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 w-full">
