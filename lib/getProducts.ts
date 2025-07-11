@@ -3,7 +3,7 @@ import axios from "axios";
 export const getProducts = async () => {
   try {
     const res = await axios.get(
-      "http://localhost:5000/api/account/getProducts"
+      "https://tech-commerce-expressserver.onrender.com/api/account/getProducts"
     );
     return res.data.products;
   } catch (error) {
