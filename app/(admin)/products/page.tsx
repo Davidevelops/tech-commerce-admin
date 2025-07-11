@@ -39,7 +39,7 @@ export default function Products() {
   const handleDelete = async (id: string) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/account/deleteProduct/${id}`
+        `https://tech-commerce-expressserver.onrender.com/api/account/deleteProduct/${id}`
       );
       setProducts((prev) => prev.filter((product) => product._id !== id));
     } catch (error) {

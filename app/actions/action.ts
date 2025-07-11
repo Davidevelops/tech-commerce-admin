@@ -10,13 +10,16 @@ export const signUp = async (_: any, formData: FormData) => {
   const email = formData.get("email")?.toString() || "";
   const password = formData.get("password")?.toString() || "";
   try {
-    const res = await axios.post("http://localhost:5000/api/account/signUp", {
-      firstName,
-      lastName,
-      middleName,
-      email,
-      password,
-    });
+    const res = await axios.post(
+      "https://tech-commerce-expressserver.onrender.com/api/account/signUp",
+      {
+        firstName,
+        lastName,
+        middleName,
+        email,
+        password,
+      }
+    );
 
     //payload
     const userId = res.data.user._id;
@@ -56,10 +59,13 @@ export const logIn = async (_: any, formData: FormData) => {
   const email = formData.get("email")?.toString() || "";
   const password = formData.get("password")?.toString() || "";
   try {
-    const res = await axios.post("http://localhost:5000/api/account/logIn", {
-      email,
-      password,
-    });
+    const res = await axios.post(
+      "https://tech-commerce-expressserver.onrender.com/api/account/logIn",
+      {
+        email,
+        password,
+      }
+    );
 
     //payload
     const user = res.data.account;
@@ -126,15 +132,18 @@ export const addProduct = async (_: any, formData: FormData) => {
   }
 
   try {
-    await axios.post("http://localhost:5000/api/account/addProduct", {
-      productName,
-      productDescription,
-      productPrice,
-      productCategory,
-      productImages,
-      productSubCategory,
-      properties,
-    });
+    await axios.post(
+      "https://tech-commerce-expressserver.onrender.com/api/account/addProduct",
+      {
+        productName,
+        productDescription,
+        productPrice,
+        productCategory,
+        productImages,
+        productSubCategory,
+        properties,
+      }
+    );
 
     return {
       success: true,
@@ -175,7 +184,7 @@ export const updateProduct = async (_: any, formData: FormData) => {
   }
   try {
     await axios.patch(
-      `http://localhost:5000/api/account/updateProduct/${productId}`,
+      `https://tech-commerce-expressserver.onrender.com/api/account/updateProduct/${productId}`,
       {
         productName,
         productDescription,
@@ -219,11 +228,14 @@ export const addCategory = async (_: any, formData: FormData) => {
     }
   }
   try {
-    await axios.post("http://localhost:5000/api/account/addCategory", {
-      name,
-      parent,
-      properties,
-    });
+    await axios.post(
+      "https://tech-commerce-expressserver.onrender.com/api/account/addCategory",
+      {
+        name,
+        parent,
+        properties,
+      }
+    );
 
     return { success: true, errors: {} };
   } catch (error: any) {
@@ -259,7 +271,7 @@ export const editCategory = async (_: any, formData: FormData) => {
 
   try {
     await axios.patch(
-      `http://localhost:5000/api/account/editCategory/${categoryId}`,
+      `https://tech-commerce-expressserver.onrender.com/api/account/editCategory/${categoryId}`,
       {
         name,
         parent,

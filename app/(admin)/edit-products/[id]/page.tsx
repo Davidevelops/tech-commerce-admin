@@ -70,7 +70,7 @@ export default function EditProduct() {
     const getProduct = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/account/getProduct/${id}`
+          `https://tech-commerce-expressserver.onrender.com/api/account/getProduct/${id}`
         );
         const data = res.data.product;
         setProduct({
